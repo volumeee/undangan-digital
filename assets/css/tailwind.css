@@ -8,17 +8,17 @@
   }
   
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-gray-50 text-gray-900 antialiased;
   }
 }
 
 @layer components {
   .glass-card {
-    @apply bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl;
+    @apply bg-white/80 backdrop-blur-xl border border-white/30 rounded-xl shadow-lg transition-all duration-300 hover:shadow-2xl;
   }
   
   .glass-button {
-    @apply bg-white/20 backdrop-blur-md border border-white/30 rounded-lg px-6 py-3 font-medium transition-all hover:bg-white/30 hover:scale-105;
+    @apply bg-white/20 backdrop-blur-md border border-white/30 rounded-lg px-6 py-3 font-medium transition-all duration-300 hover:bg-white/40 hover:scale-105 active:scale-95;
   }
   
   .section-container {
@@ -27,5 +27,106 @@
   
   .invitation-section {
     @apply mb-16 animate-fade-in;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-rose-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100;
+  }
+
+  .btn-secondary {
+    @apply bg-white border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 active:scale-95;
+  }
+
+  .btn-ghost {
+    @apply text-gray-700 hover:text-rose-600 px-4 py-2 rounded-lg transition-all duration-200 hover:bg-rose-50;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-4 focus:ring-rose-500/20 focus:border-rose-500 transition-all duration-200 outline-none;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer;
+  }
+
+  .loading-spinner {
+    @apply animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-rose-600;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+  }
+
+  .animate-slide-down {
+    animation: slideDown 0.4s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.4s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-rose-600 to-purple-600 bg-clip-text text-transparent;
+  }
+
+  .bg-gradient-primary {
+    @apply bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50;
+  }
+
+  .shadow-glow {
+    box-shadow: 0 0 30px rgba(244, 63, 94, 0.3);
+  }
+
+  .backdrop-blur-glass {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
 }

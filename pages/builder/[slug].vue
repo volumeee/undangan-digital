@@ -1,114 +1,153 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-900">
     <!-- Header -->
-    <header class="bg-white border-b border-gray-200 px-6 py-4">
-      <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <header class="bg-gray-800 border-b border-gray-700 px-6 py-4 sticky top-0 z-50">
+      <div class="max-w-full mx-auto flex justify-between items-center">
         <div class="flex items-center gap-4">
-          <NuxtLink to="/buat" class="text-gray-600 hover:text-gray-900">
-            <Icon name="heroicons-arrow-left" class="w-6 h-6" />
+          <NuxtLink to="/dashboard" class="btn-ghost text-white hover:bg-gray-700">
+            <Icon name="heroicons-arrow-left" class="w-5 h-5 inline mr-2" />
+            Kembali
           </NuxtLink>
-          <h1 class="text-xl font-semibold">Undangan Builder</h1>
+          <div class="h-8 w-px bg-gray-700"></div>
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-gradient-to-r from-rose-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <Icon name="heroicons-paint-brush" class="w-5 h-5 text-white" />
+            </div>
+            <h1 class="text-lg font-bold text-white">Undangan Builder</h1>
+          </div>
         </div>
         <div class="flex items-center gap-4">
-          <span class="text-sm text-gray-500">
-            {{ builderStore.isDirty ? 'Perubahan belum disimpan' : 'Tersimpan' }}
-          </span>
+          <div class="flex items-center gap-2 px-4 py-2 bg-gray-700 rounded-lg">
+            <div 
+              :class="[
+                'w-2 h-2 rounded-full',
+                builderStore.isDirty ? 'bg-yellow-500 animate-pulse' : 'bg-green-500'
+              ]"
+            ></div>
+            <span class="text-sm text-gray-300">
+              {{ builderStore.isDirty ? 'Belum disimpan' : 'Tersimpan' }}
+            </span>
+          </div>
           <button
             :disabled="!builderStore.isDirty || builderStore.saving"
-            class="bg-rose-600 text-white px-4 py-2 rounded-lg disabled:opacity-50 hover:bg-rose-700 transition-colors"
+            class="btn-secondary text-white border-gray-600 hover:bg-gray-700 disabled:opacity-50"
             @click="saveDraft"
           >
-            {{ builderStore.saving ? 'Menyimpan...' : 'Simpan Draft' }}
+            <Icon name="heroicons-cloud-arrow-up" class="w-5 h-5 inline mr-2" />
+            {{ builderStore.saving ? 'Menyimpan...' : 'Simpan' }}
           </button>
           <button
-            class="bg-gradient-to-r from-rose-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all"
+            class="btn-primary"
             @click="publish"
           >
+            <Icon name="heroicons-rocket-launch" class="w-5 h-5 inline mr-2" />
             Publikasikan
           </button>
         </div>
       </div>
     </header>
 
-    <div class="flex h-screen pt-16">
+    <div class="flex h-[calc(100vh-73px)]">
       <!-- Left Sidebar - Editor -->
-      <div class="w-96 bg-white border-r border-gray-200 overflow-y-auto">
-        <div class="p-6">
+      <div class="w-96 bg-gray-800 border-r border-gray-700 overflow-y-auto">
+        <div class="p-6 space-y-6">
           <!-- Price Calculator -->
-          <div class="mb-8">
-            <h3 class="text-lg font-semibold mb-4">Harga & Durasi</h3>
+          <div class="bg-gray-900 rounded-xl p-5 border border-gray-700">
+            <h3 class="text-lg font-bold mb-4 text-white flex items-center gap-2">
+              <Icon name="heroicons-calculator" class="w-5 h-5 text-rose-500" />
+              Harga & Durasi
+            </h3>
             <PriceCalculator />
           </div>
 
           <!-- Theme Customization -->
-          <div class="mb-8">
-            <h3 class="text-lg font-semibold mb-4">Kustomisasi Tema</h3>
+          <div class="bg-gray-900 rounded-xl p-5 border border-gray-700">
+            <h3 class="text-lg font-bold mb-4 text-white flex items-center gap-2">
+              <Icon name="heroicons-sparkles" class="w-5 h-5 text-purple-500" />
+              Kustomisasi Tema
+            </h3>
             <AccordionEditor />
           </div>
 
           <!-- Content Editor -->
-          <div class="mb-8">
-            <h3 class="text-lg font-semibold mb-4">Konten Undangan</h3>
+          <div class="bg-gray-900 rounded-xl p-5 border border-gray-700">
+            <h3 class="text-lg font-bold mb-4 text-white flex items-center gap-2">
+              <Icon name="heroicons-document-text" class="w-5 h-5 text-blue-500" />
+              Konten Undangan
+            </h3>
             <ContentEditor />
           </div>
 
           <!-- Media Upload -->
-          <div class="mb-8">
-            <h3 class="text-lg font-semibold mb-4">Media</h3>
+          <div class="bg-gray-900 rounded-xl p-5 border border-gray-700">
+            <h3 class="text-lg font-bold mb-4 text-white flex items-center gap-2">
+              <Icon name="heroicons-photo" class="w-5 h-5 text-green-500" />
+              Media
+            </h3>
             <MediaUpload />
           </div>
         </div>
       </div>
 
       <!-- Right - Preview -->
-      <div class="flex-1 bg-gray-100 overflow-y-auto">
-        <div class="sticky top-0 bg-white border-b border-gray-200 p-4 z-10">
+      <div class="flex-1 bg-gray-900 overflow-hidden flex flex-col">
+        <div class="bg-gray-800 border-b border-gray-700 p-4">
           <div class="flex justify-between items-center">
             <div class="flex gap-2">
               <button
                 :class="[
-                  'px-3 py-1 rounded-lg text-sm',
-                  previewDevice === 'mobile' ? 'bg-rose-600 text-white' : 'bg-gray-200 text-gray-700'
+                  'px-4 py-2 rounded-lg text-sm font-medium transition-all',
+                  previewDevice === 'mobile' 
+                    ? 'bg-gradient-to-r from-rose-600 to-purple-600 text-white shadow-lg' 
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 ]"
                 @click="previewDevice = 'mobile'"
               >
+                <Icon name="heroicons-device-phone-mobile" class="w-4 h-4 inline mr-2" />
                 Mobile
               </button>
               <button
                 :class="[
-                  'px-3 py-1 rounded-lg text-sm',
-                  previewDevice === 'tablet' ? 'bg-rose-600 text-white' : 'bg-gray-200 text-gray-700'
+                  'px-4 py-2 rounded-lg text-sm font-medium transition-all',
+                  previewDevice === 'tablet' 
+                    ? 'bg-gradient-to-r from-rose-600 to-purple-600 text-white shadow-lg' 
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 ]"
                 @click="previewDevice = 'tablet'"
               >
+                <Icon name="heroicons-device-tablet" class="w-4 h-4 inline mr-2" />
                 Tablet
               </button>
               <button
                 :class="[
-                  'px-3 py-1 rounded-lg text-sm',
-                  previewDevice === 'desktop' ? 'bg-rose-600 text-white' : 'bg-gray-200 text-gray-700'
+                  'px-4 py-2 rounded-lg text-sm font-medium transition-all',
+                  previewDevice === 'desktop' 
+                    ? 'bg-gradient-to-r from-rose-600 to-purple-600 text-white shadow-lg' 
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 ]"
                 @click="previewDevice = 'desktop'"
               >
+                <Icon name="heroicons-computer-desktop" class="w-4 h-4 inline mr-2" />
                 Desktop
               </button>
             </div>
             <button
-              class="text-gray-600 hover:text-gray-900"
+              class="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-all"
               @click="refreshPreview"
+              title="Refresh Preview"
             >
               <Icon name="heroicons-arrow-path" class="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        <div class="p-8 flex justify-center">
+        <div class="flex-1 p-6 overflow-y-auto flex justify-center items-start">
           <div
             :class="[
-              'bg-white rounded-lg shadow-xl overflow-hidden',
-              previewDevice === 'mobile' ? 'w-96 h-[812px]' : '',
+              'bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300',
+              previewDevice === 'mobile' ? 'w-[375px] h-[812px]' : '',
               previewDevice === 'tablet' ? 'w-[768px] h-[1024px]' : '',
-              previewDevice === 'desktop' ? 'w-full max-w-4xl' : ''
+              previewDevice === 'desktop' ? 'w-full max-w-6xl h-[900px]' : ''
             ]"
           >
             <iframe
@@ -122,45 +161,73 @@
     </div>
 
     <!-- Publish Modal -->
-    <div
-      v-if="showPublishModal"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-      @click="showPublishModal = false"
-    >
+    <Transition name="modal">
       <div
-        class="bg-white rounded-xl p-8 max-w-md w-full"
-        @click.stop
+        v-if="showPublishModal"
+        class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+        @click="showPublishModal = false"
       >
-        <h3 class="text-2xl font-bold mb-6">Publikasikan Undangan</h3>
-        
-        <div class="mb-6">
-          <div class="bg-gray-50 p-4 rounded-lg">
-            <div class="text-2xl font-bold text-rose-600 mb-2">
-              {{ formatPrice(builderStore.totalPrice) }}
-            </div>
-            <div class="text-sm text-gray-600">
-              {{ builderStore.invitation?.guestCount }} tamu × {{ formatPrice(2500) }} + 
-              {{ builderStore.invitation?.activeDays }} hari × {{ formatPrice(1000) }}
+        <div
+          class="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl animate-scale-in"
+          @click.stop
+        >
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-3xl font-bold text-gradient">Publikasikan Undangan</h3>
+            <button 
+              @click="showPublishModal = false"
+              class="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <Icon name="heroicons-x-mark" class="w-6 h-6" />
+            </button>
+          </div>
+          
+          <div class="mb-8">
+            <div class="bg-gradient-to-br from-rose-50 to-purple-50 p-6 rounded-xl border-2 border-rose-200">
+              <div class="text-center mb-4">
+                <div class="text-sm font-semibold text-rose-600 mb-2">Total Pembayaran</div>
+                <div class="text-5xl font-bold text-gradient">
+                  {{ formatPrice(builderStore.totalPrice) }}
+                </div>
+              </div>
+              <div class="space-y-2 text-sm text-gray-600">
+                <div class="flex justify-between items-center p-2 bg-white/50 rounded-lg">
+                  <span>Base Price</span>
+                  <span class="font-semibold">{{ formatPrice(75000) }}</span>
+                </div>
+                <div class="flex justify-between items-center p-2 bg-white/50 rounded-lg">
+                  <span>{{ builderStore.invitation?.guestCount }} Tamu × {{ formatPrice(2500) }}</span>
+                  <span class="font-semibold">{{ formatPrice((builderStore.invitation?.guestCount || 0) * 2500) }}</span>
+                </div>
+                <div class="flex justify-between items-center p-2 bg-white/50 rounded-lg">
+                  <span>{{ builderStore.invitation?.activeDays }} Hari × {{ formatPrice(1000) }}</span>
+                  <span class="font-semibold">{{ formatPrice((builderStore.invitation?.activeDays || 0) * 1000) }}</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="space-y-4">
-          <button
-            class="w-full bg-gradient-to-r from-rose-600 to-purple-600 text-white py-3 rounded-lg font-medium hover:shadow-lg transition-all"
-            @click="processPayment"
-          >
-            Bayar & Publikasikan
-          </button>
-          <button
-            class="w-full bg-gray-200 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors"
-            @click="showPublishModal = false"
-          >
-            Batal
-          </button>
+          <div class="space-y-3">
+            <button
+              class="btn-primary w-full text-lg py-4"
+              @click="processPayment"
+            >
+              <Icon name="heroicons-credit-card" class="w-5 h-5 inline mr-2" />
+              Bayar & Publikasikan
+            </button>
+            <button
+              class="btn-secondary w-full py-3"
+              @click="showPublishModal = false"
+            >
+              Batal
+            </button>
+          </div>
+
+          <p class="text-xs text-gray-500 text-center mt-4">
+            Pembayaran aman melalui Midtrans
+          </p>
         </div>
       </div>
-    </div>
+    </Transition>
   </div>
 </template>
 

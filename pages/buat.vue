@@ -1,65 +1,113 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50">
-    <div class="container mx-auto px-4 py-8">
-      <h1 class="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-rose-600 to-purple-600 bg-clip-text text-transparent">
-        Pilih Tema Undangan
-      </h1>
+  <div class="min-h-screen bg-gradient-primary">
+    <!-- Header -->
+    <nav class="glass-card sticky top-0 z-50 px-6 py-4 m-4 animate-slide-down">
+      <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <NuxtLink to="/" class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-gradient-to-r from-rose-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+            <Icon name="heroicons-heart" class="w-6 h-6 text-white" />
+          </div>
+          <h1 class="text-2xl font-bold text-gradient">
+            UndanganKu
+          </h1>
+        </NuxtLink>
+        <NuxtLink to="/" class="btn-ghost">
+          <Icon name="heroicons-arrow-left" class="w-5 h-5 inline mr-2" />
+          Kembali
+        </NuxtLink>
+      </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-12">
+      <div class="text-center mb-12 animate-fade-in">
+        <h1 class="text-5xl md:text-6xl font-bold mb-4 text-gradient">
+          Pilih Tema Undangan
+        </h1>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Pilih tema yang sesuai dengan acara spesial Anda
+        </p>
+      </div>
 
       <!-- Event Type Selection -->
-      <div class="mb-12">
-        <h2 class="text-2xl font-semibold mb-6 text-center">Jenis Acara</h2>
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-4xl mx-auto">
+      <div class="mb-16 animate-slide-up">
+        <h2 class="text-3xl font-bold mb-8 text-center text-gray-900">
+          <Icon name="heroicons-calendar" class="w-8 h-8 inline mr-2 text-rose-600" />
+          Jenis Acara
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-5xl mx-auto">
           <button
             v-for="type in eventTypes"
             :key="type.value"
             @click="selectedEventType = type.value"
             :class="[
-              'p-4 rounded-lg border-2 transition-all text-center',
+              'p-6 rounded-xl border-3 transition-all text-center group',
               selectedEventType === type.value
-                ? 'border-rose-500 bg-rose-50 text-rose-700'
-                : 'border-gray-200 hover:border-gray-300'
+                ? 'border-rose-500 bg-gradient-to-br from-rose-50 to-purple-50 text-rose-700 shadow-xl scale-105'
+                : 'border-gray-200 bg-white hover:border-rose-300 hover:shadow-lg hover:scale-105'
             ]"
           >
-            <Icon :name="type.icon" class="w-8 h-8 mx-auto mb-2" />
-            <div class="font-medium">{{ type.label }}</div>
+            <Icon 
+              :name="type.icon" 
+              :class="[
+                'w-10 h-10 mx-auto mb-3 transition-transform group-hover:scale-110',
+                selectedEventType === type.value ? 'text-rose-600' : 'text-gray-600'
+              ]" 
+            />
+            <div class="font-semibold">{{ type.label }}</div>
           </button>
         </div>
       </div>
 
       <!-- Theme Templates -->
-      <div class="mb-12">
-        <h2 class="text-2xl font-semibold mb-6 text-center">Pilih Tema</h2>
-        <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      <div class="mb-16 animate-slide-up" style="animation-delay: 0.1s">
+        <h2 class="text-3xl font-bold mb-8 text-center text-gray-900">
+          <Icon name="heroicons-sparkles" class="w-8 h-8 inline mr-2 text-purple-600" />
+          Pilih Tema
+        </h2>
+        <div class="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
           <div
-            v-for="theme in themes"
+            v-for="(theme, index) in themes"
             :key="theme.id"
-            class="glass-card overflow-hidden hover:scale-105 transition-transform cursor-pointer"
+            class="glass-card overflow-hidden card-hover group"
+            :style="`animation-delay: ${index * 0.1}s`"
             @click="selectTheme(theme)"
           >
-            <div class="h-48 bg-gradient-to-br" :style="theme.preview"></div>
-            <div class="p-6">
-              <h3 class="text-xl font-semibold mb-2">{{ theme.name }}</h3>
-              <p class="text-gray-600 mb-4">{{ theme.description }}</p>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-500">{{ theme.category }}</span>
-                <button class="bg-gradient-to-r from-rose-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:shadow-lg transition-all">
-                  Pilih
-                </button>
+            <div class="relative h-64 bg-gradient-to-br overflow-hidden" :style="theme.preview">
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
+              <div class="absolute top-4 right-4">
+                <span class="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-semibold text-gray-700">
+                  {{ theme.category }}
+                </span>
               </div>
+            </div>
+            <div class="p-6 bg-white">
+              <h3 class="text-2xl font-bold mb-2 text-gray-900 group-hover:text-rose-600 transition-colors">{{ theme.name }}</h3>
+              <p class="text-gray-600 mb-4 leading-relaxed">{{ theme.description }}</p>
+              <button class="btn-primary w-full">
+                <Icon name="heroicons-arrow-right" class="w-5 h-5 inline mr-2" />
+                Pilih Tema Ini
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Custom Theme Option -->
-      <div class="text-center">
-        <button
-          @click="createCustomTheme"
-          class="glass-button bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-4 rounded-lg font-medium hover:shadow-xl transition-all"
-        >
-          <Icon name="heroicons-sparkles" class="w-5 h-5 inline mr-2" />
-          Buat Tema Kustom
-        </button>
+      <div class="text-center animate-slide-up" style="animation-delay: 0.2s">
+        <div class="glass-card p-10 max-w-2xl mx-auto">
+          <div class="w-20 h-20 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
+            <Icon name="heroicons-sparkles" class="w-10 h-10 text-white" />
+          </div>
+          <h3 class="text-2xl font-bold mb-3 text-gray-900">Atau Buat Tema Kustom</h3>
+          <p class="text-gray-600 mb-6">Mulai dari awal dan buat desain unik sesuai keinginan Anda</p>
+          <button
+            @click="createCustomTheme"
+            class="btn-primary text-lg px-12 py-4"
+          >
+            <Icon name="heroicons-paint-brush" class="w-5 h-5 inline mr-2" />
+            Buat Tema Kustom
+          </button>
+        </div>
       </div>
     </div>
   </div>
