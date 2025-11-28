@@ -88,7 +88,7 @@ const handleLogin = async () => {
     } else {
       error.value = result.error || 'Login gagal. Silakan coba lagi.'
     }
-  } catch (err) {
+  } catch {
     error.value = 'Terjadi kesalahan. Silakan coba lagi.'
   } finally {
     loading.value = false

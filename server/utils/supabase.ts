@@ -1,13 +1,20 @@
 import { createClient } from '@supabase/supabase-js'
+import type { Database } from '~/types/supabase'
 
-const supabaseUrl = useRuntimeConfig().supabaseUrl
-const supabaseKey = useRuntimeConfig().supabaseKey
+// Get Supabase credentials from environment
+const supabaseUrl = process.env.SUPABASE_URL || ''
+const supabaseKey = process.env.SUPABASE_KEY || ''
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || ''
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+if (!supabaseUrl || !supabaseKey) {
+  console.warn('Missing Supabase credentials. Make sure SUPABASE_URL and SUPABASE_KEY are set.')
+}
 
-export const supabaseAdmin = createClient(
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey)
+
+export const supabaseAdmin = createClient<Database>(
   supabaseUrl,
-  useRuntimeConfig().supabaseServiceKey,
+  supabaseServiceKey,
   {
     auth: {
       autoRefreshToken: false,

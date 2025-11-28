@@ -11,16 +11,16 @@ export default defineEventHandler(async (event) => {
   }
   
   try {
-    const { data: invitation, error } = await supabaseAdmin
+    const { data: invitation, error: dbError } = await supabaseAdmin
       .from('invitations')
       .select('*')
       .eq('slug', slug)
       .single()
     
-    if (error) throw error
+    if (dbError) throw dbError
     
     return invitation
-  } catch (error) {
+  } catch {
     throw createError({
       statusCode: 404,
       statusMessage: 'Invitation not found'

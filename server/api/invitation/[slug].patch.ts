@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   }
   
   try {
-    const { data: invitation, error } = await supabaseAdmin
+    const { data: invitation, error: dbError } = await supabaseAdmin
       .from('invitations')
       .upsert({
         ...body,
@@ -22,10 +22,10 @@ export default defineEventHandler(async (event) => {
       .select()
       .single()
     
-    if (error) throw error
+    if (dbError) throw dbError
     
     return invitation
-  } catch (error) {
+  } catch {
     throw createError({
       statusCode: 500,
       statusMessage: 'Failed to update invitation'
