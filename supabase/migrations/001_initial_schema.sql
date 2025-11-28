@@ -212,29 +212,13 @@ CREATE TRIGGER generate_guest_unique_link
   FOR EACH ROW EXECUTE FUNCTION public.generate_unique_guest_link();
 
 -- Storage policies for file uploads
-CREATE STORAGE POLICY "Users can upload to their own invitation folders" ON storage.invitations
-  FOR INSERT WITH CHECK (
-    auth.role() = 'authenticated' AND
-    (storage.foldername(name))[1] IN (
-      SELECT slug::text FROM public.invitations 
-      WHERE owner_id = auth.uid()
-    )
-  );
-
-CREATE STORAGE POLICY "Users can view their own invitation files" ON storage.invitations
-  FOR SELECT USING (
-    auth.role() = 'authenticated' AND
-    (storage.foldername(name))[1] IN (
-      SELECT slug::text FROM public.invitations 
-      WHERE owner_id = auth.uid()
-    )
-  );
-
--- Public access to published invitation files
-CREATE STORAGE POLICY "Public access to published invitation files" ON storage.invitations
-  FOR SELECT USING (
-    (storage.foldername(name))[1] IN (
-      SELECT slug::text FROM public.invitations 
-      WHERE status IN ('published', 'paid')
-    )
-  );
+-- Note: Storage policies must be configured via Supabase Dashboard
+-- They use Supabase-specific SQL extensions not available in direct PostgreSQL connections
+-- 
+-- To configure storage policies:
+-- 1. Go to Supabase Dashboard > Storage > Create bucket "invitations"
+-- 2. Set bucket to Public or Private as needed
+-- 3. Configure policies via Dashboard UI:
+--    - "Users can upload to their own invitation folders"
+--    - "Users can view their own invitation files"
+--    - "Public access to published invitation files"
