@@ -38,6 +38,14 @@ jobs:
         MIDTRANS_CLIENT_KEY: ${{ secrets.MIDTRANS_CLIENT_KEY }}
         FONNTE_API_KEY: ${{ secrets.FONNTE_API_KEY }}
     
+    - name: Create Cloudflare Pages project (if not exists)
+      if: github.ref == 'refs/heads/main'
+      run: |
+        npx wrangler pages project create undangan-digital --production-branch=main || true
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    
     - name: Deploy to Cloudflare Pages
       if: github.ref == 'refs/heads/main'
       run: npx wrangler pages deploy dist --project-name=undangan-digital --branch=main
