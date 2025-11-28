@@ -8,6 +8,8 @@ yarn-error.log*
 .nuxt/
 .output/
 .dist/
+dist/
+.wrangler/
 
 # Environment variables
 .env

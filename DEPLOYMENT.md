@@ -68,7 +68,9 @@ npm run preview
 ### 2. Cloudflare Pages Setup
 - [ ] Connect repository to Cloudflare Pages
 - [ ] Set build command: `npm run build`
-- [ ] Set output directory: `.output/public`
+- [ ] Set output directory: `dist`
+- [ ] Set deploy command: `npm run deploy` (menjalankan `wrangler pages deploy dist`)
+- [ ] Hapus konfigurasi lama yang memakai `npx wrangler deploy` (perintah ini untuk Workers, bukan Pages)
 - [ ] Configure environment variables
 - [ ] Enable Functions (for API routes)
 
