@@ -8,12 +8,12 @@ Project ini menggunakan PostgreSQL via Supabase dengan migration dan seeder otom
 
 ### For GitHub Actions:
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `SUPABASE_URL` | Supabase project URL | `https://xxxxx.supabase.co` |
-| `SUPABASE_SERVICE_KEY` | Service role key (secret!) | `eyJhbGciOiJIUzI1NiIs...` |
-| `DATABASE_PASSWORD` | PostgreSQL password | Same as service key or DB password |
-| `DATABASE_URL` | Direct PostgreSQL connection (optional) | `postgresql://postgres:password@db.xxxxx.supabase.co:5432/postgres` |
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `DATABASE_URL` | PostgreSQL connection URI | ✅ **YES** |
+| `SUPABASE_URL` | Supabase project URL (for app runtime) | ✅ YES |
+| `SUPABASE_KEY` | Supabase anon key (for app runtime) | ✅ YES |
+| `SUPABASE_SERVICE_KEY` | Service role key (for server API) | ✅ YES |
 
 ### Getting Database Credentials:
 
@@ -21,23 +21,20 @@ Project ini menggunakan PostgreSQL via Supabase dengan migration dan seeder otom
    - Go to: https://app.supabase.com/
    - Select your project
 
-2. **Get SUPABASE_URL and SUPABASE_SERVICE_KEY:**
-   - Click **Settings** (gear icon)
-   - Click **API**
+2. **Get DATABASE_URL:**
+   - Click **Settings** (gear icon) > **Database**
+   - Scroll to **Connection string**
+   - Select **URI** tab
+   - Copy the connection string (format: `postgresql://postgres.xxxxx:[YOUR-PASSWORD]@host:port/postgres`)
+   - Replace `[YOUR-PASSWORD]` with your actual database password
+   - Example: `postgresql://postgres.nodqmccxdjtjcmbpreaq:undangan123@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres`
+
+3. **Get SUPABASE_URL and Keys:**
+   - Click **Settings** > **API**
    - Copy:
      - **Project URL** → `SUPABASE_URL`
-     - **service_role** key → `SUPABASE_SERVICE_KEY`
-
-3. **Get DATABASE_PASSWORD:**
-   - Click **Settings** > **Database**
-   - Copy **Database password** (you set this when creating project)
-   - Or use `SUPABASE_SERVICE_KEY` as password
-
-4. **Get DATABASE_URL (optional):**
-   - Click **Settings** > **Database**
-   - Under **Connection string** > **URI**
-   - Copy the full connection string
-   - Replace `[YOUR-PASSWORD]` with actual password
+     - **anon public** → `SUPABASE_KEY`
+     - **service_role** → `SUPABASE_SERVICE_KEY`
 
 ## NPM Scripts
 
@@ -95,24 +92,25 @@ Workflow automatically:
 Add these secrets:
 
 ```
-SUPABASE_URL = https://xxxxx.supabase.co
-SUPABASE_KEY = eyJhbGciOiJIUzI1NiIs... (anon key)
-SUPABASE_SERVICE_KEY = eyJhbGciOiJIUzI1NiIs... (service key)
-DATABASE_PASSWORD = your_database_password
-DATABASE_URL = postgresql://postgres:password@db.xxxxx.supabase.co:5432/postgres (optional)
+DATABASE_URL = postgresql://postgres.nodqmccxdjtjcmbpreaq:undangan123@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
+SUPABASE_URL = https://nodqmccxdjtjcmbpreaq.supabase.co
+SUPABASE_KEY = eyJhbGciOiJIUzI1NiIs... (your anon key)
+SUPABASE_SERVICE_KEY = eyJhbGciOiJIUzI1NiIs... (your service key)
 ```
+
+⚠️ **IMPORTANT:** Change password `undangan123` to your actual database password!
 
 ## Troubleshooting
 
 ### Error: "password authentication failed"
 
-❌ **Cause:** Wrong `DATABASE_PASSWORD`
+❌ **Cause:** Wrong password in `DATABASE_URL`
 
 ✅ **Solution:**
 1. Go to Supabase Dashboard > Settings > Database
-2. Click **Reset database password**
+2. Click **Reset database password** if you forgot
 3. Copy new password
-4. Update `DATABASE_PASSWORD` in GitHub Secrets
+4. Update `DATABASE_URL` in GitHub Secrets with new password
 
 ### Error: "could not connect to server"
 
@@ -134,10 +132,8 @@ DATABASE_URL = postgresql://postgres:password@db.xxxxx.supabase.co:5432/postgres
 ## Manual Migration (Local)
 
 ```bash
-# Set environment variables
-export SUPABASE_URL="https://xxxxx.supabase.co"
-export SUPABASE_SERVICE_KEY="your_service_key"
-export DATABASE_PASSWORD="your_db_password"
+# Set environment variable
+export DATABASE_URL="postgresql://postgres.nodqmccxdjtjcmbpreaq:undangan123@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres"
 
 # Run migration
 npm run db:migrate

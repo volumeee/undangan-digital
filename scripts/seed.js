@@ -16,13 +16,13 @@ const { Client } = pg
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-// Get Supabase credentials from environment
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY
+// Get database connection from environment
+const connectionString = process.env.DATABASE_URL
 const nodeEnv = process.env.NODE_ENV || 'development'
 
-if (!supabaseUrl || !supabaseServiceKey) {
-  console.error('❌ Error: SUPABASE_URL and SUPABASE_SERVICE_KEY must be set')
+if (!connectionString) {
+  console.error('❌ Error: DATABASE_URL must be set')
+  console.error('   Format: postgresql://postgres.xxxxx:[PASSWORD]@host:port/postgres')
   process.exit(1)
 }
 
@@ -33,18 +33,10 @@ if (nodeEnv === 'production' && process.env.ALLOW_PRODUCTION_SEED !== 'true') {
   process.exit(0)
 }
 
-// Extract database connection info from Supabase URL
-const projectRef = supabaseUrl.replace('https://', '').replace('.supabase.co', '')
-const dbHost = `db.${projectRef.split('.')[0]}.supabase.co`
-const dbPassword = process.env.DATABASE_PASSWORD || supabaseServiceKey
-
-const connectionString = process.env.DATABASE_URL || 
-  `postgresql://postgres:${dbPassword}@${dbHost}:5432/postgres`
-
 async function runSeeder() {
   console.log('🌱 Starting database seeding...')
   console.log(`   Environment: ${nodeEnv}`)
-  console.log(`📡 Connecting to: ${dbHost}`)
+  console.log(`📡 Connecting to database...`)
   
   const client = new Client({
     connectionString,
