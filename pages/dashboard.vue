@@ -155,13 +155,25 @@
 </template>
 
 <script setup lang="ts">
+import type { Database } from '~/types/supabase'
 import { useAuthStore } from '~/stores/auth'
 
 const authStore = useAuthStore()
 const router = useRouter()
 
+type DashboardInvitation = {
+  id: number
+  slug: string
+  title: string
+  eventType: string
+  status: 'draft' | 'published' | 'paid' | 'expired'
+  guestCount: number
+  createdAt: string
+  totalPrice: number
+}
+
 // Reactive data
-const invitations = ref([])
+const invitations = ref<DashboardInvitation[]>([])
 const stats = ref({
   totalInvitations: 0,
   publishedInvitations: 0,
@@ -171,26 +183,48 @@ const stats = ref({
 
 // Fetch user invitations
 const fetchInvitations = async () => {
+  if (!authStore.user?.id) {
+    invitations.value = []
+    stats.value = {
+      totalInvitations: 0,
+      publishedInvitations: 0,
+      totalGuests: 0,
+      totalRevenue: 0
+    }
+    return
+  }
+  
   try {
-    const supabase = useSupabaseClient()
+    const supabase = useSupabaseClient<Database>()
     const { data, error } = await supabase
       .from('invitations')
       .select('*')
-      .eq('owner_id', authStore.user?.id)
+      .eq('owner_id', authStore.user.id)
       .order('created_at', { ascending: false })
     
     if (error) throw error
-    invitations.value = data || []
     
-    // Calculate stats
-    stats.value.totalInvitations = invitations.value.length
-    stats.value.publishedInvitations = invitations.value.filter(inv => 
+    const normalized: DashboardInvitation[] = (data || []).map((invitation) => ({
+      id: invitation.id,
+      slug: invitation.slug,
+      title: invitation.title,
+      eventType: invitation.event_type,
+      status: invitation.status,
+      guestCount: invitation.guest_count,
+      createdAt: invitation.created_at,
+      totalPrice: invitation.total_price
+    }))
+    
+    invitations.value = normalized
+    
+    stats.value.totalInvitations = normalized.length
+    stats.value.publishedInvitations = normalized.filter(inv => 
       inv.status === 'published' || inv.status === 'paid'
     ).length
-    stats.value.totalGuests = invitations.value.reduce((sum, inv) => sum + inv.guest_count, 0)
-    stats.value.totalRevenue = invitations.value
+    stats.value.totalGuests = normalized.reduce((sum, inv) => sum + inv.guestCount, 0)
+    stats.value.totalRevenue = normalized
       .filter(inv => inv.status === 'paid')
-      .reduce((sum, inv) => sum + inv.total_price, 0)
+      .reduce((sum, inv) => sum + inv.totalPrice, 0)
   } catch (error) {
     console.error('Failed to fetch invitations:', error)
   }

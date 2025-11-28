@@ -66,10 +66,19 @@
 </template>
 
 <script setup lang="ts">
-const router = useRouter()
-const selectedEventType = ref('wedding')
+import type { EventType } from '~/types'
 
-const eventTypes = [
+type ThemeOption = {
+  id: string
+  name: string
+  description: string
+  category: string
+  preview: string
+}
+
+const selectedEventType = ref<EventType>('wedding')
+
+const eventTypes: Array<{ value: EventType; label: string; icon: string }> = [
   { value: 'wedding', label: 'Pernikahan', icon: 'heroicons-heart' },
   { value: 'engagement', label: 'Lamaran', icon: 'heroicons-gift' },
   { value: 'aqiqah', label: 'Aqiqah', icon: 'heroicons-star' },
@@ -77,7 +86,7 @@ const eventTypes = [
   { value: 'corporate', label: 'Corporate', icon: 'heroicons-briefcase' }
 ]
 
-const themes = [
+const themes: ThemeOption[] = [
   {
     id: 'elegant-rose',
     name: 'Elegant Rose',
@@ -122,7 +131,7 @@ const themes = [
   }
 ]
 
-const selectTheme = (theme: any) => {
+const selectTheme = (theme: ThemeOption) => {
   const slug = generateSlug()
   navigateTo(`/builder/${slug}?theme=${theme.id}&type=${selectedEventType.value}`)
 }
@@ -133,7 +142,7 @@ const createCustomTheme = () => {
 }
 
 const generateSlug = () => {
-  return `${selectedEventType.value}-${Date.now().toString(36)}-${Math.random().toString(36).substr(2, 9)}`
+  return `${selectedEventType.value}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 11)}`
 }
 
 useSeoMeta({

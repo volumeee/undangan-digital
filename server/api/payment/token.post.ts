@@ -3,7 +3,7 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   
   try {
-    const response = await $fetch('https://app.sandbox.midtrans.com/snap/v1/transactions', {
+    const response = await $fetch<{ token: string }>('https://app.sandbox.midtrans.com/snap/v1/transactions', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -50,10 +50,11 @@ export default defineEventHandler(async (event) => {
       success: true,
       token: response.token
     }
-  } catch (error: any) {
+  } catch (error) {
+    const statusMessage = error instanceof Error ? error.message : 'Failed to create payment token'
     throw createError({
       statusCode: 500,
-      statusMessage: error.message || 'Failed to create payment token'
+      statusMessage
     })
   }
 })

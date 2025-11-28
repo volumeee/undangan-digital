@@ -1,4 +1,4 @@
-import type { InvitationData, ThemeConfig } from '~/types'
+import type { EventType, InvitationData, ThemeConfig } from '~/types'
 
 export const useBuilderStore = defineStore('builder', () => {
   const invitation = ref<InvitationData | null>(null)
@@ -53,14 +53,15 @@ export const useBuilderStore = defineStore('builder', () => {
       isDirty.value = false
       lastSaved.value = new Date()
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Gagal menyimpan draft'
+      return { success: false, error: errorMessage }
     } finally {
       saving.value = false
     }
   }
   
-  const createInvitation = async (eventType: string, slug: string) => {
+  const createInvitation = async (eventType: EventType, slug: string) => {
     const defaultTheme: ThemeConfig = {
       color: {
         primary: '#d4a574',
@@ -106,7 +107,7 @@ export const useBuilderStore = defineStore('builder', () => {
     
     const newInvitation: InvitationData = {
       slug,
-      eventType: eventType as any,
+      eventType,
       ownerId: '',
       title: '',
       date: {},

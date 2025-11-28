@@ -14,15 +14,15 @@
             {{ builderStore.isDirty ? 'Perubahan belum disimpan' : 'Tersimpan' }}
           </span>
           <button
-            @click="saveDraft"
             :disabled="!builderStore.isDirty || builderStore.saving"
             class="bg-rose-600 text-white px-4 py-2 rounded-lg disabled:opacity-50 hover:bg-rose-700 transition-colors"
+            @click="saveDraft"
           >
             {{ builderStore.saving ? 'Menyimpan...' : 'Simpan Draft' }}
           </button>
           <button
-            @click="publish"
             class="bg-gradient-to-r from-rose-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all"
+            @click="publish"
           >
             Publikasikan
           </button>
@@ -66,36 +66,36 @@
           <div class="flex justify-between items-center">
             <div class="flex gap-2">
               <button
-                @click="previewDevice = 'mobile'"
                 :class="[
                   'px-3 py-1 rounded-lg text-sm',
                   previewDevice === 'mobile' ? 'bg-rose-600 text-white' : 'bg-gray-200 text-gray-700'
                 ]"
+                @click="previewDevice = 'mobile'"
               >
                 Mobile
               </button>
               <button
-                @click="previewDevice = 'tablet'"
                 :class="[
                   'px-3 py-1 rounded-lg text-sm',
                   previewDevice === 'tablet' ? 'bg-rose-600 text-white' : 'bg-gray-200 text-gray-700'
                 ]"
+                @click="previewDevice = 'tablet'"
               >
                 Tablet
               </button>
               <button
-                @click="previewDevice = 'desktop'"
                 :class="[
                   'px-3 py-1 rounded-lg text-sm',
                   previewDevice === 'desktop' ? 'bg-rose-600 text-white' : 'bg-gray-200 text-gray-700'
                 ]"
+                @click="previewDevice = 'desktop'"
               >
                 Desktop
               </button>
             </div>
             <button
-              @click="refreshPreview"
               class="text-gray-600 hover:text-gray-900"
+              @click="refreshPreview"
             >
               <Icon name="heroicons-arrow-path" class="w-5 h-5" />
             </button>
@@ -147,14 +147,14 @@
 
         <div class="space-y-4">
           <button
-            @click="processPayment"
             class="w-full bg-gradient-to-r from-rose-600 to-purple-600 text-white py-3 rounded-lg font-medium hover:shadow-lg transition-all"
+            @click="processPayment"
           >
             Bayar & Publikasikan
           </button>
           <button
-            @click="showPublishModal = false"
             class="w-full bg-gray-200 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+            @click="showPublishModal = false"
           >
             Batal
           </button>
@@ -165,6 +165,7 @@
 </template>
 
 <script setup lang="ts">
+import type { EventType } from '~/types'
 import { useBuilderStore } from '~/stores/builder'
 import { useMidtrans } from '~/composables/useMidtrans'
 import { usePrice } from '~/composables/usePrice'
@@ -181,9 +182,11 @@ const showPublishModal = ref(false)
 const slug = route.params.slug as string
 const previewUrl = computed(() => `/inv/${slug}?preview=true`)
 
+const initialEventType = (route.query.type as EventType | undefined) ?? 'wedding'
+
 onMounted(async () => {
   await builderStore.createInvitation(
-    route.query.type as string || 'wedding',
+    initialEventType,
     slug
   )
   
@@ -195,7 +198,7 @@ onMounted(async () => {
 
 const saveDraft = async () => {
   const result = await builderStore.saveDraft()
-  if (!result.success) {
+  if (result && !result.success && result.error) {
     alert(result.error)
   }
 }
@@ -210,7 +213,7 @@ const processPayment = async () => {
   try {
     const tokenData = await createPaymentToken({
       amount: builderStore.totalPrice,
-      invitationId: builderStore.invitation.id,
+      invitationId: builderStore.invitation.id ?? 0,
       eventType: builderStore.invitation.eventType,
       customerName: 'User Name', // Get from auth store
       customerEmail: 'user@example.com',
@@ -227,15 +230,16 @@ const processPayment = async () => {
     // Payment successful
     showPublishModal.value = false
     await router.push(`/dashboard`)
-  } catch (error: any) {
-    alert(error.message)
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan saat memproses pembayaran'
+    alert(errorMessage)
   }
 }
 
 const refreshPreview = () => {
-  const iframe = document.querySelector('iframe') as HTMLIFrameElement
-  if (iframe) {
-    iframe.src = iframe.src
+  const iframe = document.querySelector('iframe') as HTMLIFrameElement | null
+  if (iframe?.contentWindow) {
+    iframe.contentWindow.location.reload()
   }
 }
 

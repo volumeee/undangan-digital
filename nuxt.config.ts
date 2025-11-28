@@ -3,7 +3,8 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
     '@nuxtjs/google-fonts',
-    '@pinia/nuxt'
+    '@pinia/nuxt',
+    '@nuxtjs/supabase'
   ],
   css: ['~/assets/css/tailwind.css'],
   googleFonts: {
@@ -23,13 +24,7 @@ export default defineNuxtConfig({
     exposeConfig: false,
     viewer: true,
   },
-  nitro: {
-    prerender: {
-      routes: [
-        '/inv/[slug]'
-      ]
-    }
-  },
+
   runtimeConfig: {
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseKey: process.env.SUPABASE_ANON_KEY,

@@ -87,7 +87,7 @@ export type GuestBookEntry = {
   photo?: string
   reaction?: string
   isVisible: boolean
-  createdAt?: Date
+  createdAt?: string | Date
 }
 
 export type PaymentData = {
