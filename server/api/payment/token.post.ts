@@ -50,10 +50,11 @@ export default defineEventHandler(async (event) => {
       success: true,
       token: response.token
     }
-  } catch (error: any) {
+  } catch (error) {
+    const statusMessage = error instanceof Error ? error.message : 'Failed to create payment token'
     throw createError({
       statusCode: 500,
-      statusMessage: error.message || 'Failed to create payment token'
+      statusMessage
     })
   }
 })

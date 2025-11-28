@@ -1,26 +1,18 @@
-import { defineConfig } from 'eslint-define-config'
-import { createRequire } from 'module'
+import { defineFlatConfig } from 'eslint-define-config'
+import { createConfigForNuxt } from '@nuxt/eslint-config/flat'
 
-const require = createRequire(import.meta.url)
-
-export default defineConfig({
-  extends: [
-    '@nuxt/eslint-config',
-    'plugin:vue/vue3-recommended'
-  ],
-  rules: {
-    'vue/multi-word-component-names': 'off',
-    '@typescript-eslint/no-unused-vars': 'warn',
-    'prefer-const': 'warn',
-    'no-console': 'warn'
-  },
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module'
-  },
-  env: {
-    browser: true,
-    node: true,
-    es2022: true
-  }
-})
+export default defineFlatConfig(
+  await createConfigForNuxt(
+    {},
+    {
+      rules: {
+        'vue/multi-word-component-names': 'off',
+        'vue/html-self-closing': 'off',
+        'vue/attributes-order': 'off',
+        '@typescript-eslint/no-unused-vars': 'warn',
+        'prefer-const': 'warn',
+        'no-console': 'warn'
+      }
+    }
+  )
+)

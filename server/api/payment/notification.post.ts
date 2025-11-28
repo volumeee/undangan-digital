@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { supabaseAdmin } from '~/server/utils/supabase'
 
 export default defineEventHandler(async (event) => {
@@ -6,9 +7,7 @@ export default defineEventHandler(async (event) => {
   
   try {
     // Verify Midtrans signature
-    const crypto = require('crypto')
-    const hash = crypto
-      .createHash('sha512')
+    const hash = createHash('sha512')
       .update(`${body.order_id}${body.status_code}${body.gross_amount}${config.midtransServerKey}`)
       .digest('hex')
     
@@ -48,10 +47,11 @@ export default defineEventHandler(async (event) => {
       success: true,
       status: body.transaction_status
     }
-  } catch (error: any) {
+  } catch (error) {
+    const statusMessage = error instanceof Error ? error.message : 'Failed to process notification'
     throw createError({
       statusCode: 500,
-      statusMessage: error.message || 'Failed to process notification'
+      statusMessage
     })
   }
 })

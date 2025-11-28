@@ -1,10 +1,11 @@
-import type { InvitationData } from '~/types'
+import type { User } from '@supabase/supabase-js'
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<any>(null)
+  const user = ref<User | null>(null)
   const loading = ref(false)
   
   const supabase = useSupabaseClient()
+  const getErrorMessage = (error: unknown) => error instanceof Error ? error.message : 'Terjadi kesalahan'
   
   const login = async (email: string, password: string) => {
     loading.value = true
@@ -18,8 +19,8 @@ export const useAuthStore = defineStore('auth', () => {
       
       user.value = data.user
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error) {
+      return { success: false, error: getErrorMessage(error) }
     } finally {
       loading.value = false
     }
@@ -42,8 +43,8 @@ export const useAuthStore = defineStore('auth', () => {
       
       user.value = data.user
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error) {
+      return { success: false, error: getErrorMessage(error) }
     } finally {
       loading.value = false
     }
