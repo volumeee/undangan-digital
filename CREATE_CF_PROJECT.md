@@ -1,6 +1,7 @@
 # Cara Membuat Cloudflare Pages Project
 
 ## Error yang Anda Alami:
+
 ```
 Project not found. The specified project name does not match any of your existing projects.
 ```
@@ -12,23 +13,28 @@ Ini berarti project `undangan-digital` belum ada di Cloudflare Pages Anda.
 ### Langkah 1: Login dan Buat Project
 
 1. **Login ke Cloudflare Dashboard:**
+
    - Buka: https://dash.cloudflare.com/
    - Login dengan email yang sama dengan Account ID di GitHub Secrets
 
 2. **Pilih Account yang Benar:**
+
    - Pastikan Anda login ke account yang Account ID-nya sudah di-set di GitHub Secrets
    - Lihat di sidebar, klik account dropdown jika punya multiple accounts
 
 3. **Buka Pages:**
+
    - Klik **Workers & Pages** di sidebar kiri
    - Atau langsung ke: https://dash.cloudflare.com/?to=/:account/pages
 
 4. **Create New Project:**
+
    - Klik **Create application**
    - Pilih tab **Pages**
    - Klik **Upload assets** (Direct Upload)
 
 5. **Set Project Name:**
+
    - Project name: **`undangan-digital`** (harus PERSIS sama!)
    - Klik **Create project**
 
@@ -41,6 +47,7 @@ Ini berarti project `undangan-digital` belum ada di Cloudflare Pages Anda.
 **PENTING:** Pastikan Account ID di GitHub Secrets sama dengan account yang baru buat project!
 
 1. **Lihat Account ID di Cloudflare:**
+
    - Di Cloudflare Dashboard, pilih salah satu domain/site
    - Scroll ke bawah di sidebar kanan
    - Copy **Account ID** (format: `abc123def456...`)
@@ -55,10 +62,12 @@ Ini berarti project `undangan-digital` belum ada di Cloudflare Pages Anda.
 API Token harus punya permission untuk account yang benar:
 
 1. **Cek API Token:**
+
    - Buka: https://dash.cloudflare.com/profile/api-tokens
    - Cari token yang dipakai untuk GitHub Actions
 
 2. **Pastikan Permission:**
+
    - Account > Cloudflare Pages > Edit ✅
    - Pastikan token ini untuk account yang sama dengan Account ID
 
@@ -75,6 +84,7 @@ API Token harus punya permission untuk account yang benar:
 Setelah project dibuat dan secrets benar:
 
 1. **Re-run GitHub Actions:**
+
    - Buka: https://github.com/volumeee/undangan-digital/actions
    - Pilih workflow yang failed
    - Klik **Re-run all jobs**
@@ -88,11 +98,13 @@ Setelah project dibuat dan secrets benar:
 ## Troubleshooting
 
 ### Masih Error: "Project not found"
+
 - ❌ Project name typo (harus `undangan-digital` persis)
 - ❌ Account ID salah (check lagi di Cloudflare)
 - ❌ API Token untuk account berbeda
 
 ### Error: "Insufficient permissions"
+
 - ❌ API Token tidak punya permission Cloudflare Pages > Edit
 - ✅ Buat token baru dengan template "Edit Cloudflare Workers"
 
