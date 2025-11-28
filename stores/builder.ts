@@ -40,15 +40,13 @@ export const useBuilderStore = defineStore('builder', () => {
     
     saving.value = true
     try {
-      const { data, error } = await $fetch(`/api/invitation/${invitation.value.slug}`, {
+      await $fetch(`/api/invitation/${invitation.value.slug}`, {
         method: 'PATCH',
         body: {
           ...invitation.value,
           status: 'draft'
         }
       })
-      
-      if (error) throw error
       
       isDirty.value = false
       lastSaved.value = new Date()
