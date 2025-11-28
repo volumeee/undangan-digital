@@ -24,17 +24,14 @@ export default defineNuxtConfig({
     exposeConfig: false,
     viewer: true,
   },
-
+  supabase: {
+    redirect: false
+  },
   runtimeConfig: {
-    supabaseUrl: process.env.SUPABASE_URL,
-    supabaseKey: process.env.SUPABASE_ANON_KEY,
     supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY,
     midtransServerKey: process.env.MIDTRANS_SERVER_KEY,
-    midtransClientKey: process.env.MIDTRANS_CLIENT_KEY,
     fonnteApiKey: process.env.FONNTE_API_KEY,
     public: {
-      supabaseUrl: process.env.SUPABASE_URL,
-      supabaseKey: process.env.SUPABASE_ANON_KEY,
       midtransClientKey: process.env.MIDTRANS_CLIENT_KEY
     }
   },

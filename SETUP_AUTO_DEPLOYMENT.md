@@ -47,7 +47,7 @@ Project ini sudah memiliki:
 | `CLOUDFLARE_API_TOKEN`  | Token dari langkah 1      | API token untuk deploy ke Cloudflare                |
 | `CLOUDFLARE_ACCOUNT_ID` | Account ID dari langkah 1 | ID akun Cloudflare Anda                             |
 | `SUPABASE_URL`          | URL Supabase project      | Contoh: https://xxxxx.supabase.co                   |
-| `SUPABASE_ANON_KEY`     | Anon/Public key Supabase  | Bisa didapat di Supabase Dashboard > Settings > API |
+| `SUPABASE_KEY`          | Anon/Public key Supabase  | Bisa didapat di Supabase Dashboard > Settings > API |
 | `SUPABASE_SERVICE_KEY`  | Service role key Supabase | ⚠️ **Jangan share!** Production only                |
 | `MIDTRANS_SERVER_KEY`   | Server key Midtrans       | Dari Midtrans Dashboard                             |
 | `MIDTRANS_CLIENT_KEY`   | Client key Midtrans       | Dari Midtrans Dashboard                             |
@@ -72,15 +72,15 @@ Walaupun GitHub Actions akan otomatis membuat project jika belum ada, lebih baik
 2. Klik **Settings** > **Environment variables**
 3. Tambahkan variable berikut untuk **Production** dan **Preview**:
 
-| Variable Name              | Nilai                              |
-| -------------------------- | ---------------------------------- |
-| `NUXT_PUBLIC_SUPABASE_URL` | URL Supabase project               |
-| `NUXT_PUBLIC_SUPABASE_KEY` | Anon key Supabase                  |
-| `SUPABASE_SERVICE_KEY`     | Service role key (Production only) |
-| `MIDTRANS_SERVER_KEY`      | Server key Midtrans                |
-| `MIDTRANS_CLIENT_KEY`      | Client key Midtrans                |
-| `FONNTE_API_KEY`           | API key Fonnte                     |
-| `NODE_VERSION`             | `20` atau `22`                     |
+| Variable Name          | Nilai                              |
+| ---------------------- | ---------------------------------- |
+| `SUPABASE_URL`         | URL Supabase project               |
+| `SUPABASE_KEY`         | Anon key Supabase                  |
+| `SUPABASE_SERVICE_KEY` | Service role key (Production only) |
+| `MIDTRANS_SERVER_KEY`  | Server key Midtrans                |
+| `MIDTRANS_CLIENT_KEY`  | Client key Midtrans                |
+| `FONNTE_API_KEY`       | API key Fonnte                     |
+| `NODE_VERSION`         | `20` atau `22`                     |
 
 ### 4. Test Auto Deployment
 
