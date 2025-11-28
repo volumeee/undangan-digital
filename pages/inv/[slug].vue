@@ -180,7 +180,7 @@
 </template>
 
 <script setup lang="ts">
-import type { InvitationData } from '~/types'
+import type { InvitationData, ThemeConfig } from '~/types'
 
 const props = defineProps<{
   slug: string
@@ -188,27 +188,86 @@ const props = defineProps<{
 
 const { slug } = toRefs(props)
 
+const createDefaultThemeConfig = (): ThemeConfig => ({
+  color: {
+    primary: '#d4a574',
+    secondary: '#8b7355',
+    background: '#faf8f5'
+  },
+  typography: {
+    headingFont: 'Playfair Display',
+    bodyFont: 'Montserrat'
+  },
+  background: {
+    type: 'color',
+    value: '#faf8f5'
+  },
+  music: {
+    enabled: true,
+    autoplay: true,
+    showPlayer: true,
+    startVolume: 0.3,
+    url: ''
+  },
+  sections: {
+    akad: true,
+    resepsi: true,
+    loveStory: true,
+    gallery: true,
+    gift: true,
+    protocol: true,
+    liveStream: false
+  },
+  labels: {
+    akad: 'Akad Nikah',
+    resepsi: 'Resepsi',
+    loveStory: 'Love Story',
+    gallery: 'Galeri',
+    gift: 'Hadiah',
+    protocol: 'Protokol Kesehatan',
+    liveStream: 'Live Stream'
+  },
+  animation: 'slow',
+  locale: 'id'
+})
+
+const createDefaultInvitation = (): InvitationData => ({
+  id: 0,
+  slug: '',
+  eventType: 'wedding',
+  ownerId: '',
+  title: '',
+  date: {},
+  location: {},
+  story: '',
+  gallery: [],
+  themeConfig: createDefaultThemeConfig(),
+  guestCount: 0,
+  activeDays: 0,
+  totalPrice: 0,
+  status: 'draft'
+})
+
 // Get invitation data
-const { data: invitation, pending, error } = await useFetch<InvitationData>(
+const { data: invitation } = await useFetch<InvitationData>(
   `/api/invitation/${slug.value}`,
   {
     key: `invitation-${slug.value}`
   }
 )
 
-// Extract data for easier use
-const {
-  id,
-  title,
-  eventType,
-  groom,
-  bride,
-  date,
-  location,
-  story,
-  gallery,
-  themeConfig
-} = toRefs(invitation.value || {})
+const invitationData = computed<InvitationData>(() => invitation.value ?? createDefaultInvitation())
+
+const id = computed(() => invitationData.value.id ?? 0)
+const title = computed(() => invitationData.value.title)
+const eventType = computed(() => invitationData.value.eventType)
+const groom = computed(() => invitationData.value.groom)
+const bride = computed(() => invitationData.value.bride)
+const date = computed(() => invitationData.value.date)
+const location = computed(() => invitationData.value.location)
+const story = computed(() => invitationData.value.story ?? '')
+const gallery = computed(() => invitationData.value.gallery ?? [])
+const themeConfig = computed(() => invitationData.value.themeConfig)
 
 // Computed styles
 const invitationStyles = computed(() => {
@@ -271,8 +330,11 @@ const formatTime = (date: Date) => {
 onMounted(() => {
   window.addEventListener('message', (event) => {
     if (event.data.type === 'invitation-data') {
-      // Update invitation data in real-time
-      Object.assign(invitation.value || {}, event.data.data)
+      if (invitation.value) {
+        Object.assign(invitation.value, event.data.data)
+      } else {
+        invitation.value = event.data.data as InvitationData
+      }
     }
   })
 })

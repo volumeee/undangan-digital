@@ -16,7 +16,7 @@
             />
             <div
               v-if="!builderStore.invitation?.groom?.photo"
-              @click="$refs.groomPhotoInput?.click()"
+              @click="groomPhotoInput?.click()"
               class="cursor-pointer"
             >
               <Icon name="heroicons-photo" class="w-12 h-12 text-gray-400 mx-auto mb-2" />
@@ -50,7 +50,7 @@
             />
             <div
               v-if="!builderStore.invitation?.bride?.photo"
-              @click="$refs.bridePhotoInput?.click()"
+              @click="bridePhotoInput?.click()"
               class="cursor-pointer"
             >
               <Icon name="heroicons-photo" class="w-12 h-12 text-gray-400 mx-auto mb-2" />
@@ -86,7 +86,7 @@
           class="hidden"
           ref="galleryInput"
         />
-        <div @click="$refs.galleryInput?.click()" class="cursor-pointer text-center">
+        <div @click="galleryInput?.click()" class="cursor-pointer text-center">
           <Icon name="heroicons-photo" class="w-12 h-12 text-gray-400 mx-auto mb-2" />
           <p class="text-sm text-gray-500">Upload foto galeri (maksimal 10 foto)</p>
         </div>
@@ -129,7 +129,7 @@
           />
           <div
             v-if="!builderStore.invitation?.themeConfig.music.url"
-            @click="$refs.musicInput?.click()"
+            @click="musicInput?.click()"
             class="cursor-pointer text-center"
           >
             <Icon name="heroicons-musical-note" class="w-12 h-12 text-gray-400 mx-auto mb-2" />
@@ -197,16 +197,24 @@
 </template>
 
 <script setup lang="ts">
+import type { Person } from '~/types'
 import { useBuilderStore } from '~/stores/builder'
 import { useUpload } from '~/composables/useUpload'
 
 const builderStore = useBuilderStore()
 const { uploadImage, uploadGalleryImage } = useUpload()
 
-const groomPhotoInput = ref<HTMLInputElement>()
-const bridePhotoInput = ref<HTMLInputElement>()
-const galleryInput = ref<HTMLInputElement>()
-const musicInput = ref<HTMLInputElement>()
+const groomPhotoInput = ref<HTMLInputElement | null>(null)
+const bridePhotoInput = ref<HTMLInputElement | null>(null)
+const galleryInput = ref<HTMLInputElement | null>(null)
+const musicInput = ref<HTMLInputElement | null>(null)
+
+const createEmptyPerson = (): Person => ({
+  name: '',
+  father: '',
+  mother: '',
+  photo: ''
+})
 
 const handleGroomPhotoUpload = async (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0]
@@ -214,8 +222,9 @@ const handleGroomPhotoUpload = async (event: Event) => {
   
   try {
     const url = await uploadImage(file, builderStore.invitation.slug, 'groom')
+    const groom = builderStore.invitation.groom ?? createEmptyPerson()
     builderStore.invitation.groom = {
-      ...builderStore.invitation.groom,
+      ...groom,
       photo: url
     }
   } catch (error) {
@@ -229,8 +238,9 @@ const handleBridePhotoUpload = async (event: Event) => {
   
   try {
     const url = await uploadImage(file, builderStore.invitation.slug, 'bride')
+    const bride = builderStore.invitation.bride ?? createEmptyPerson()
     builderStore.invitation.bride = {
-      ...builderStore.invitation.bride,
+      ...bride,
       photo: url
     }
   } catch (error) {

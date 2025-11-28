@@ -3,7 +3,7 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   
   try {
-    const response = await $fetch('https://app.sandbox.midtrans.com/snap/v1/transactions', {
+    const response = await $fetch<{ token: string }>('https://app.sandbox.midtrans.com/snap/v1/transactions', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

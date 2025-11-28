@@ -165,6 +165,7 @@
 </template>
 
 <script setup lang="ts">
+import type { EventType } from '~/types'
 import { useBuilderStore } from '~/stores/builder'
 import { useMidtrans } from '~/composables/useMidtrans'
 import { usePrice } from '~/composables/usePrice'
@@ -181,9 +182,11 @@ const showPublishModal = ref(false)
 const slug = route.params.slug as string
 const previewUrl = computed(() => `/inv/${slug}?preview=true`)
 
+const initialEventType = (route.query.type as EventType | undefined) ?? 'wedding'
+
 onMounted(async () => {
   await builderStore.createInvitation(
-    route.query.type as string || 'wedding',
+    initialEventType,
     slug
   )
   
@@ -195,7 +198,7 @@ onMounted(async () => {
 
 const saveDraft = async () => {
   const result = await builderStore.saveDraft()
-  if (!result.success) {
+  if (result && !result.success && result.error) {
     alert(result.error)
   }
 }
@@ -210,7 +213,7 @@ const processPayment = async () => {
   try {
     const tokenData = await createPaymentToken({
       amount: builderStore.totalPrice,
-      invitationId: builderStore.invitation.id,
+      invitationId: builderStore.invitation.id ?? 0,
       eventType: builderStore.invitation.eventType,
       customerName: 'User Name', // Get from auth store
       customerEmail: 'user@example.com',

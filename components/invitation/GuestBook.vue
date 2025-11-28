@@ -122,6 +122,7 @@
 
 <script setup lang="ts">
 import type { GuestBookEntry } from '~/types'
+import type { Database } from '~/types/supabase'
 
 const props = defineProps<{
   invitationId: number
@@ -129,7 +130,7 @@ const props = defineProps<{
 
 const { invitationId } = toRefs(props)
 
-const supabase = useSupabaseClient()
+const supabase = useSupabaseClient<Database>()
 
 // Reactive data
 const entries = ref<GuestBookEntry[]>([])
@@ -142,6 +143,17 @@ const form = ref({
 })
 
 const emojis = ['❤️', '🎉', '🙏', '💕', '✨', '🌹', '💐', '🎊']
+
+const mapGuestBookRow = (row: Database['public']['Tables']['guest_book']['Row']): GuestBookEntry => ({
+  id: row.id,
+  invitationId: row.invitation_id,
+  guestName: row.guest_name,
+  message: row.message,
+  photo: row.photo || '',
+  reaction: row.reaction || '',
+  isVisible: row.is_visible,
+  createdAt: row.created_at
+})
 
 // Computed styles (inherited from parent)
 const headingStyles = computed(() => ({
@@ -160,7 +172,7 @@ const fetchEntries = async () => {
       .order('created_at', { ascending: false })
     
     if (error) throw error
-    entries.value = data || []
+    entries.value = (data || []).map(mapGuestBookRow)
   } catch (error) {
     console.error('Failed to fetch guest book entries:', error)
   }
@@ -234,7 +246,8 @@ const handlePhotoUpload = async (event: Event) => {
 }
 
 // Format date
-const formatDate = (date: string) => {
+const formatDate = (date?: string | Date) => {
+  if (!date) return ''
   return new Intl.DateTimeFormat('id-ID', {
     day: 'numeric',
     month: 'long',
@@ -261,7 +274,7 @@ onMounted(() => {
       },
       (payload) => {
         if (payload.new.is_visible) {
-          entries.value.unshift(payload.new as GuestBookEntry)
+          entries.value.unshift(mapGuestBookRow(payload.new as Database['public']['Tables']['guest_book']['Row']))
         }
       }
     )

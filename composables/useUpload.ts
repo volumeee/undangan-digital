@@ -1,5 +1,7 @@
+import type { Database } from '~/types/supabase'
+
 export const useUpload = () => {
-  const supabase = useSupabaseClient()
+  const supabase = useSupabaseClient<Database>()
   
   const uploadFile = async (file: File, path: string) => {
     const { data, error } = await supabase.storage

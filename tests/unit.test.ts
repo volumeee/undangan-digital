@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
 import { useBuilderStore } from '~/stores/builder'
 import { usePrice } from '~/composables/usePrice'
 

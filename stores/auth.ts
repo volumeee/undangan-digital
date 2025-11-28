@@ -1,10 +1,11 @@
 import type { User } from '@supabase/supabase-js'
+import type { Database } from '~/types/supabase'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
   const loading = ref(false)
   
-  const supabase = useSupabaseClient()
+  const supabase = useSupabaseClient<Database>()
   const getErrorMessage = (error: unknown) => error instanceof Error ? error.message : 'Terjadi kesalahan'
   
   const login = async (email: string, password: string) => {
