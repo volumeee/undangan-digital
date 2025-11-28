@@ -109,8 +109,9 @@ npm run preview
 ### Deploy ke Cloudflare Pages
 1. Connect repository ke Cloudflare Pages
 2. Set build command: `npm run build`
-3. Set output directory: `.output/public`
-4. Setup environment variables
+3. Set output directory: `dist`
+4. Set deploy command: `npm run deploy` (menggunakan `wrangler pages deploy dist`)
+5. Setup environment variables
 
 ## 📱 Mobile Preview
 
