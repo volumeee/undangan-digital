@@ -45,5 +45,5 @@ jobs:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         projectName: undangan-digital
-        directory: .output/public
+        directory: dist
         gitHubToken: ${{ secrets.GITHUB_TOKEN }}
