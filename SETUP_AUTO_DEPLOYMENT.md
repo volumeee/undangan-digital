@@ -5,6 +5,7 @@ Dokumen ini berisi langkah-langkah untuk mengaktifkan auto deployment ke Cloudfl
 ## ✅ Yang Sudah Dikonfigurasi
 
 Project ini sudah memiliki:
+
 - ✅ GitHub Actions workflow (`.github/workflows/deploy.yml`)
 - ✅ Konfigurasi Nuxt untuk Cloudflare Pages (`nitro.preset: 'cloudflare-pages'`)
 - ✅ Wrangler configuration (`wrangler.toml`)
@@ -15,6 +16,7 @@ Project ini sudah memiliki:
 ### 1. Dapatkan Cloudflare API Token dan Account ID
 
 #### Cara Mendapatkan API Token:
+
 1. Login ke [Cloudflare Dashboard](https://dash.cloudflare.com/)
 2. Klik profile icon (kanan atas) > **My Profile**
 3. Pilih menu **API Tokens**
@@ -27,6 +29,7 @@ Project ini sudah memiliki:
 8. **COPY TOKEN** ini (hanya muncul sekali!)
 
 #### Cara Mendapatkan Account ID:
+
 1. Di Cloudflare Dashboard, pilih salah satu site/project Anda
 2. Scroll kebawah di halaman Overview
 3. Di sidebar kanan, lihat **Account ID** (biasanya berisi hash seperti `abc123def456...`)
@@ -39,16 +42,16 @@ Project ini sudah memiliki:
 3. Klik **New repository secret**
 4. Tambahkan secrets berikut satu per satu:
 
-| Secret Name | Nilai | Keterangan |
-|-------------|-------|------------|
-| `CLOUDFLARE_API_TOKEN` | Token dari langkah 1 | API token untuk deploy ke Cloudflare |
-| `CLOUDFLARE_ACCOUNT_ID` | Account ID dari langkah 1 | ID akun Cloudflare Anda |
-| `SUPABASE_URL` | URL Supabase project | Contoh: https://xxxxx.supabase.co |
-| `SUPABASE_ANON_KEY` | Anon/Public key Supabase | Bisa didapat di Supabase Dashboard > Settings > API |
-| `SUPABASE_SERVICE_KEY` | Service role key Supabase | ⚠️ **Jangan share!** Production only |
-| `MIDTRANS_SERVER_KEY` | Server key Midtrans | Dari Midtrans Dashboard |
-| `MIDTRANS_CLIENT_KEY` | Client key Midtrans | Dari Midtrans Dashboard |
-| `FONNTE_API_KEY` | API key Fonnte | Untuk WhatsApp gateway |
+| Secret Name             | Nilai                     | Keterangan                                          |
+| ----------------------- | ------------------------- | --------------------------------------------------- |
+| `CLOUDFLARE_API_TOKEN`  | Token dari langkah 1      | API token untuk deploy ke Cloudflare                |
+| `CLOUDFLARE_ACCOUNT_ID` | Account ID dari langkah 1 | ID akun Cloudflare Anda                             |
+| `SUPABASE_URL`          | URL Supabase project      | Contoh: https://xxxxx.supabase.co                   |
+| `SUPABASE_ANON_KEY`     | Anon/Public key Supabase  | Bisa didapat di Supabase Dashboard > Settings > API |
+| `SUPABASE_SERVICE_KEY`  | Service role key Supabase | ⚠️ **Jangan share!** Production only                |
+| `MIDTRANS_SERVER_KEY`   | Server key Midtrans       | Dari Midtrans Dashboard                             |
+| `MIDTRANS_CLIENT_KEY`   | Client key Midtrans       | Dari Midtrans Dashboard                             |
+| `FONNTE_API_KEY`        | API key Fonnte            | Untuk WhatsApp gateway                              |
 
 **Catatan:** `GITHUB_TOKEN` sudah otomatis tersedia, tidak perlu ditambahkan manual.
 
@@ -69,19 +72,20 @@ Walaupun GitHub Actions akan otomatis membuat project jika belum ada, lebih baik
 2. Klik **Settings** > **Environment variables**
 3. Tambahkan variable berikut untuk **Production** dan **Preview**:
 
-| Variable Name | Nilai |
-|---------------|-------|
-| `NUXT_PUBLIC_SUPABASE_URL` | URL Supabase project |
-| `NUXT_PUBLIC_SUPABASE_KEY` | Anon key Supabase |
-| `SUPABASE_SERVICE_KEY` | Service role key (Production only) |
-| `MIDTRANS_SERVER_KEY` | Server key Midtrans |
-| `MIDTRANS_CLIENT_KEY` | Client key Midtrans |
-| `FONNTE_API_KEY` | API key Fonnte |
-| `NODE_VERSION` | `20` atau `22` |
+| Variable Name              | Nilai                              |
+| -------------------------- | ---------------------------------- |
+| `NUXT_PUBLIC_SUPABASE_URL` | URL Supabase project               |
+| `NUXT_PUBLIC_SUPABASE_KEY` | Anon key Supabase                  |
+| `SUPABASE_SERVICE_KEY`     | Service role key (Production only) |
+| `MIDTRANS_SERVER_KEY`      | Server key Midtrans                |
+| `MIDTRANS_CLIENT_KEY`      | Client key Midtrans                |
+| `FONNTE_API_KEY`           | API key Fonnte                     |
+| `NODE_VERSION`             | `20` atau `22`                     |
 
 ### 4. Test Auto Deployment
 
 1. Commit dan push perubahan ke branch `main`:
+
    ```bash
    git add .
    git commit -m "Setup auto deployment"
@@ -89,6 +93,7 @@ Walaupun GitHub Actions akan otomatis membuat project jika belum ada, lebih baik
    ```
 
 2. Cek GitHub Actions:
+
    - Buka repository di GitHub
    - Klik tab **Actions**
    - Lihat workflow **"Deploy to Cloudflare Pages"** sedang berjalan
@@ -102,18 +107,22 @@ Walaupun GitHub Actions akan otomatis membuat project jika belum ada, lebih baik
 ### 5. Troubleshooting
 
 #### Error: "Failed to create deployment"
+
 - ❌ **Penyebab:** API Token salah atau tidak punya permission
 - ✅ **Solusi:** Buat ulang API Token dengan permission yang benar
 
 #### Error: "Could not find account"
+
 - ❌ **Penyebab:** Account ID salah
 - ✅ **Solusi:** Cek kembali Account ID di Cloudflare Dashboard
 
 #### Error: "Missing environment variables"
+
 - ❌ **Penyebab:** Secrets di GitHub belum di-set
 - ✅ **Solusi:** Pastikan semua secrets sudah ditambahkan di GitHub Settings
 
 #### Build Success tapi Website Error 500
+
 - ❌ **Penyebab:** Environment variables di Cloudflare Pages belum di-set
 - ✅ **Solusi:** Tambahkan environment variables di Cloudflare Pages Settings
 
@@ -122,6 +131,7 @@ Walaupun GitHub Actions akan otomatis membuat project jika belum ada, lebih baik
 Setelah setup selesai, workflow otomatis berjalan ketika:
 
 1. **Push ke branch `main`:**
+
    - Install dependencies
    - Run linting
    - Run type checking
