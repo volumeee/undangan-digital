@@ -2,14 +2,15 @@
 
 /**
  * Database Migration Script
- * Runs Supabase migrations against the configured database
+ * Runs Supabase migrations against the configured database using PostgreSQL client
  */
 
-import { createClient } from '@supabase/supabase-js'
+import pg from 'pg'
 import { readFileSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
+const { Client } = pg
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
@@ -22,63 +23,66 @@ if (!supabaseUrl || !supabaseServiceKey) {
   process.exit(1)
 }
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  }
-})
+// Extract database connection info from Supabase URL
+// Format: https://xxxxx.supabase.co -> xxxxx.db.supabase.co
+const projectRef = supabaseUrl.replace('https://', '').replace('.supabase.co', '')
+const dbHost = `db.${projectRef.split('.')[0]}.supabase.co`
+
+// Password is the service key (for direct PostgreSQL connection)
+const dbPassword = process.env.DATABASE_PASSWORD || supabaseServiceKey
+
+const connectionString = process.env.DATABASE_URL || 
+  `postgresql://postgres:${dbPassword}@${dbHost}:5432/postgres`
 
 async function runMigration() {
   console.log('🚀 Starting database migration...')
+  console.log(`📡 Connecting to: ${dbHost}`)
+  
+  const client = new Client({
+    connectionString,
+    ssl: { rejectUnauthorized: false }
+  })
   
   try {
+    await client.connect()
+    console.log('✅ Connected to database')
+    
     // Read migration file
     const migrationPath = join(__dirname, '../supabase/migrations/001_initial_schema.sql')
     const migrationSQL = readFileSync(migrationPath, 'utf8')
     
     console.log('📄 Running migration: 001_initial_schema.sql')
     
-    // Split SQL by statement (rough split by semicolon, handling some edge cases)
-    const statements = migrationSQL
-      .split(';')
-      .map(s => s.trim())
-      .filter(s => s.length > 0 && !s.startsWith('--'))
+    // Run the entire migration in a transaction
+    await client.query('BEGIN')
     
-    // Execute each statement
-    for (let i = 0; i < statements.length; i++) {
-      const statement = statements[i] + ';'
+    try {
+      // Execute the migration SQL
+      await client.query(migrationSQL)
+      await client.query('COMMIT')
       
-      // Skip comments and empty statements
-      if (statement.trim().startsWith('--') || statement.trim() === ';') {
-        continue
-      }
+      console.log('✅ Migration completed successfully!')
+    } catch (err) {
+      await client.query('ROLLBACK')
       
-      try {
-        const { error } = await supabase.rpc('exec_sql', { sql: statement })
-        
-        if (error && !error.message.includes('already exists')) {
-          console.warn(`⚠️  Warning on statement ${i + 1}: ${error.message}`)
-        } else {
-          console.log(`✅ Executed statement ${i + 1}/${statements.length}`)
-        }
-      } catch (err) {
-        // If table/function already exists, it's okay
-        if (err.message && (
-          err.message.includes('already exists') ||
-          err.message.includes('duplicate')
-        )) {
-          console.log(`ℹ️  Statement ${i + 1} skipped (already exists)`)
-        } else {
-          console.error(`❌ Error on statement ${i + 1}:`, err.message)
-        }
+      // Check if error is because objects already exist
+      if (err.message && (
+        err.message.includes('already exists') ||
+        err.message.includes('duplicate')
+      )) {
+        console.log('ℹ️  Migration skipped (schema already exists)')
+      } else {
+        throw err
       }
     }
     
-    console.log('✅ Migration completed successfully!')
+    await client.end()
     process.exit(0)
   } catch (error) {
     console.error('❌ Migration failed:', error.message)
+    if (client) {
+      await client.end()
+    }
     process.exit(1)
   }
 }

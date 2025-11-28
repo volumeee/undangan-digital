@@ -2,16 +2,17 @@
 
 /**
  * Database Seeder Script
- * Seeds the database with sample data for development/testing
+ * Seeds the database with sample data for development/testing using PostgreSQL client
  * 
  * WARNING: This will insert sample data. Only run in development!
  */
 
-import { createClient } from '@supabase/supabase-js'
+import pg from 'pg'
 import { readFileSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
+const { Client } = pg
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
@@ -32,64 +33,58 @@ if (nodeEnv === 'production' && process.env.ALLOW_PRODUCTION_SEED !== 'true') {
   process.exit(0)
 }
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  }
-})
+// Extract database connection info from Supabase URL
+const projectRef = supabaseUrl.replace('https://', '').replace('.supabase.co', '')
+const dbHost = `db.${projectRef.split('.')[0]}.supabase.co`
+const dbPassword = process.env.DATABASE_PASSWORD || supabaseServiceKey
+
+const connectionString = process.env.DATABASE_URL || 
+  `postgresql://postgres:${dbPassword}@${dbHost}:5432/postgres`
 
 async function runSeeder() {
   console.log('🌱 Starting database seeding...')
   console.log(`   Environment: ${nodeEnv}`)
+  console.log(`📡 Connecting to: ${dbHost}`)
+  
+  const client = new Client({
+    connectionString,
+    ssl: { rejectUnauthorized: false }
+  })
   
   try {
+    await client.connect()
+    console.log('✅ Connected to database')
+    
     // Read seed file
     const seedPath = join(__dirname, '../supabase/seed.sql')
     const seedSQL = readFileSync(seedPath, 'utf8')
     
     console.log('📄 Running seed: seed.sql')
     
-    // Split SQL by statement
-    const statements = seedSQL
-      .split(';')
-      .map(s => s.trim())
-      .filter(s => s.length > 0 && !s.startsWith('--'))
-    
-    // Execute each statement
-    for (let i = 0; i < statements.length; i++) {
-      const statement = statements[i] + ';'
-      
-      // Skip comments and empty statements
-      if (statement.trim().startsWith('--') || statement.trim() === ';') {
-        continue
-      }
-      
-      try {
-        const { error } = await supabase.rpc('exec_sql', { sql: statement })
-        
-        if (error && !error.message.includes('duplicate key')) {
-          console.warn(`⚠️  Warning on statement ${i + 1}: ${error.message}`)
-        } else {
-          console.log(`✅ Executed statement ${i + 1}/${statements.length}`)
-        }
-      } catch (err) {
-        // If data already exists, it's okay
-        if (err.message && (
-          err.message.includes('duplicate key') ||
-          err.message.includes('already exists')
-        )) {
-          console.log(`ℹ️  Statement ${i + 1} skipped (data already exists)`)
-        } else {
-          console.error(`❌ Error on statement ${i + 1}:`, err.message)
-        }
+    try {
+      // Execute the seed SQL
+      await client.query(seedSQL)
+      console.log('✅ Seeding completed successfully!')
+    } catch (err) {
+      // Check if error is because data already exists
+      if (err.message && (
+        err.message.includes('duplicate key') ||
+        err.message.includes('already exists')
+      )) {
+        console.log('ℹ️  Seeding skipped (data already exists)')
+      } else {
+        throw err
       }
     }
     
-    console.log('✅ Seeding completed successfully!')
+    await client.end()
     process.exit(0)
   } catch (error) {
     console.error('❌ Seeding failed:', error.message)
+    console.error(error.stack)
+    if (client) {
+      await client.end()
+    }
     process.exit(1)
   }
 }
