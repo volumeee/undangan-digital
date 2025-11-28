@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl;
+  }
+  
+  .glass-button {
+    @apply bg-white/20 backdrop-blur-md border border-white/30 rounded-lg px-6 py-3 font-medium transition-all hover:bg-white/30 hover:scale-105;
+  }
+  
+  .section-container {
+    @apply max-w-6xl mx-auto px-4 py-12;
+  }
+  
+  .invitation-section {
+    @apply mb-16 animate-fade-in;
+  }
+}
