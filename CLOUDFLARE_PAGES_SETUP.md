@@ -26,9 +26,10 @@ When Nuxt builds with `cloudflare-pages` preset, it generates:
 **IMPORTANT:** Use these exact settings:
 
 - **Framework preset:** Nuxt.js (or select "None" and configure manually)
+- **Root directory:** `/` (or leave BLANK - do NOT set to `/dist`!)
 - **Build command:** `npm run build`
 - **Build output directory:** `dist`
-- **Deploy command:** Leave this **EMPTY** or use `npm run deploy`
+- **Deploy command:** `npm run deploy` (or leave EMPTY)
 
 ### 3. Why Leave Deploy Command Empty?
 
@@ -123,6 +124,27 @@ This is the recommended deployment method for production.
 2. Find "Deploy command"
 3. Either leave it **empty** or set it to `npm run deploy`
 4. Save and retry deployment
+
+### Error: "Build token has been deleted or rolled"
+
+**Solution:** Regenerate your build token:
+1. Go to Cloudflare Pages > Your Project > Settings > Build & deployments
+2. Find "Build token" or "Worker Builds" section
+3. Click "Regenerate token" or "Create new token"
+4. Save the changes and retry deployment
+
+### Error: Root directory is set to `/dist`
+
+**Solution:** This is a common mistake - Root directory should point to your source code, not build output:
+1. Go to Cloudflare Pages > Your Project > Settings > Build & deployments
+2. Find "Root directory"
+3. Change from `/dist` to `/` or leave it **BLANK**
+4. Ensure "Build output directory" is set to `dist`
+5. Save and retry deployment
+
+**Remember:**
+- **Root directory** = Where your package.json and source code live (usually `/` or blank)
+- **Build output directory** = Where built files are generated (should be `dist`)
 
 ### Error: "Missing supabase url/key"
 
