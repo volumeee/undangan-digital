@@ -36,6 +36,7 @@ jobs:
     
     - name: Seed database (development only)
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      continue-on-error: true
       run: npm run db:seed
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}

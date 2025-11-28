@@ -1,11 +1,38 @@
 -- Seed data for development and testing
+-- 
+-- IMPORTANT: This seed file requires users to exist in auth.users first!
+-- 
+-- To use this seed file:
+-- 1. Create test users via Supabase Dashboard > Authentication > Add user
+-- 2. Use the user UUIDs below to match created users
+-- 3. Or skip seeding - it's optional for development only
+--
+-- For production, users register via the application (no seeding needed)
 
--- Insert sample users (these would normally be created via auth)
-INSERT INTO public.profiles (id, name, phone) VALUES
-('00000000-0000-0000-0000-000000000001', 'John Doe', '+628123456789'),
-('00000000-0000-0000-0000-000000000002', 'Jane Smith', '+628987654321');
+-- Note: Profiles table has foreign key to auth.users(id)
+-- These UUIDs must exist in auth.users table first
+-- Uncomment and modify UUIDs after creating users in Supabase Auth
 
--- Insert sample invitations
+-- INSERT INTO public.profiles (id, name, phone) VALUES
+-- ('00000000-0000-0000-0000-000000000001', 'John Doe', '+628123456789'),
+-- ('00000000-0000-0000-0000-000000000002', 'Jane Smith', '+628987654321');
+
+-- ====================================================================
+-- ALL SAMPLE DATA BELOW IS COMMENTED OUT
+-- ====================================================================
+-- 
+-- Reason: Sample data requires users to exist in auth.users first
+-- 
+-- To enable sample data:
+-- 1. Create users via Supabase Dashboard > Authentication
+-- 2. Replace UUIDs below with real user IDs
+-- 3. Uncomment the INSERT statements
+--
+-- For most cases, you don't need seed data - users will register via app
+-- ====================================================================
+
+-- Sample invitations (requires users in auth.users)
+/*
 INSERT INTO public.invitations (
   slug,
   event_type,
@@ -98,3 +125,18 @@ INSERT INTO public.payments (id, invitation_id, order_id, amount, status, paymen
 ('pay_wedding_001', 1, 'INV-1701234567890', 325000, 'success', 'credit_card', 'TXN-1234567890', '{"approval_code": "123456", "bank": "bni", "masked_card": "411111-1111"}'),
 ('pay_engagement_001', 2, 'INV-1701234567891', 200000, 'success', 'bank_transfer', 'TXN-1234567891', '{"va_number": "1234567890", "bank": "bca"}'),
 ('pay_aqiqah_001', 3, 'INV-1701234567892', 260000, 'pending', 'ewallet', null, '{"ewallet_type": "gopay", "phone": "+628123456789"}');
+*/
+
+-- ====================================================================
+-- END OF SAMPLE DATA
+-- ====================================================================
+--
+-- Seed file is intentionally empty for production deployment
+-- Sample data requires manual user creation in Supabase Auth first
+-- 
+-- To populate with sample data:
+-- 1. Create test users in Supabase Dashboard > Authentication
+-- 2. Edit this file and replace UUIDs with real user IDs
+-- 3. Uncomment the sample INSERT statements above
+-- 4. Run: npm run db:seed
+--
