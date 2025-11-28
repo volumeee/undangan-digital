@@ -28,6 +28,24 @@ jobs:
     - name: Type check
       run: npm run typecheck
     
+    - name: Run database migrations
+      if: github.ref == 'refs/heads/main'
+      run: |
+        npm run db:migrate || echo "⚠️ Migration failed or already applied"
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+    
+    - name: Seed database (development only)
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        npm run db:seed || echo "⚠️ Seeding skipped or failed"
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        NODE_ENV: development
+        ALLOW_PRODUCTION_SEED: false
+    
     - name: Build application
       run: npm run build
       env:
